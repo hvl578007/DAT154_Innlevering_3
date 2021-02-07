@@ -28,6 +28,16 @@ namespace SpaceSim
         {
             Console.WriteLine(Name + ". X: " + XPos.ToString() + ", Y: " + YPos.ToString() + ".");
         }
+
+        public virtual String Info()
+        {
+            return "Name: " + Name;
+        }
+
+        public override string ToString()
+        {
+            return Name;
+        }
     }
 
     public class Star : SpaceObject
@@ -71,7 +81,12 @@ namespace SpaceSim
         public Color Color { get; set; }
         //ha referanse til ellipse?
         public Ellipse shape { get; set; }
+        public TextBlock shapeText { get; set; }
         public List<Moon> Moons { get; set; }
+
+        //planetinfo greier... burde nok kanskje vere egen klasse eller noko, blir rot...
+        public Ellipse infoShape { get; set; }
+        public TextBlock infoText { get; set; }
 
         public Planet(String name, int orbitalRadius, int orbitalPeriod) : base(name)
         {
@@ -83,12 +98,29 @@ namespace SpaceSim
         public override void CalcPos(int time)
         {
             Canvas c = (Canvas)shape.Parent;
+            int scaledOrbitRadius = SpaceScalingHelper.OrbitalRadiusScaling(c.RenderSize.Width, OrbitalRadius);
             //fart er 2*PI*R/T
-            XPos = (int)(c.RenderSize.Width / 2 - shape.Width / 2 + OrbitalRadius * Math.Cos(time * (2 * 3.1416 * OrbitalRadius / OrbitalPeriod) / 30));
-            YPos = (int)(c.RenderSize.Height / 2 - shape.Height / 2 + OrbitalRadius * Math.Sin(time * (2 * 3.1416 * OrbitalRadius / OrbitalPeriod) / 30));
-
+            XPos = (int)(c.RenderSize.Width / 2 - shape.Width / 2 + scaledOrbitRadius * Math.Cos(time * (2 * 3.1416 * scaledOrbitRadius / OrbitalPeriod) / 30));
+            YPos = (int)(c.RenderSize.Height / 2 - shape.Height / 2 + scaledOrbitRadius * -Math.Sin(time * (2 * 3.1416 * scaledOrbitRadius / OrbitalPeriod) / 30));
+            //TODO må ha noko skalering her
             Canvas.SetLeft(shape, XPos);
             Canvas.SetTop(shape, YPos);
+
+            Canvas.SetLeft(shapeText, XPos + shape.Width / 2);
+            Canvas.SetTop(shapeText, YPos + shape.Height);
+        }
+
+        public virtual void CalcPosInfo(int time)
+        {
+            Canvas c = (Canvas)infoShape.Parent;
+            int x = (int)(c.RenderSize.Width / 2 - infoShape.Width / 2);
+            int y = (int)(c.RenderSize.Height / 2 - infoShape.Height / 2);
+            Canvas.SetLeft(infoShape, x);
+            Canvas.SetTop(infoShape, y);
+
+            //TODO for tekstboks også
+            Canvas.SetLeft(infoText, 10);
+            Canvas.SetTop(infoText, c.RenderSize.Height - 100);
         }
 
         public override void Draw()
@@ -105,6 +137,18 @@ namespace SpaceSim
                 m?.Draw();
             }
         }
+
+        public override string Info()
+        {
+            string svar = base.Info() + "\n"
+                + "Orbital radius: " + OrbitalRadius + "\n"
+                + "Orbital period: " + OrbitalPeriod + "\n"
+                + "Rotational period: " + RotationalPeriod + "\n"
+                + "Polar radius: " + ObjectRadius + "\n"
+                + "Moons: ";
+            Moons.ForEach(m => svar += (m.Name + ", "));
+            return svar; 
+        }
     }
 
     public class Moon : Planet
@@ -118,6 +162,14 @@ namespace SpaceSim
             base.CalcPos(time);
             XPos += PlanetOrbiting.XPos;
             YPos += PlanetOrbiting.YPos;
+        }
+
+        public override void CalcPosInfo(int time)
+        {
+            base.CalcPosInfo(time);
+            Canvas c = (Canvas)infoShape.Parent;
+            int scaledOrbitRadius = SpaceScalingHelper.OrbitalRadiusScaling(c.RenderSize.Width, OrbitalRadius);
+
         }
 
         public override void Draw()
@@ -208,13 +260,44 @@ namespace SpaceSim
 
     }
 
-    public class SpaceScaling
+    public class SpaceScalingHelper
     {
-        public static int ScalingOnBiggestRadius(int radius, int sizecanvas)
+        /// <summary>
+        /// Gir ein skalering på orbitalradius-skalering (?)
+        /// </summary>
+        /// <param name="canvasWidth"></param>
+        /// <param name="canvasHeight"></param>
+        /// <param name="radius"></param>
+        /// <returns></returns>
+        public static int OrbitalRadiusScaling(double canvasWidth, int radius)
         {
-            //den største kan vere ~200px i radius?
-            //radius -> 200px, kva må ein dele med?
-            return radius / 200;
+            //større width = mindre faktor, mindre width = større faktor
+            if ((int)canvasWidth == 0) return 0;
+            int scalingFactor = (int)(2000.0 * 1000.0 / canvasWidth);
+            double extraScaling = 1.0 + radius / 1250000.0;
+            //TODO fiks...
+            //if (radius > 500000) extraScaling = 1.6;
+            //if (radius > 1000000) extraScaling = 2.2;
+            //if (radius > 2000000) extraScaling = 3.5;
+            //if (radius > 4000000) extraScaling = 4.7;
+            //double bigRadius = ;
+            //if (bigRadius >= 0.2) extraScaling += bigRadius;
+            int scaledRadius = (int)(radius / (scalingFactor * extraScaling));
+            return scaledRadius;
+        }
+
+        public static int ObjectRadiusScaling(double windowWidth, int radius)
+        {
+            //maks radius = 60px? (sola), minimum = 5px? - blir ikkje til scale då,menmen
+            //9 objekt som skal teiknast, så ~1/10 av breidda til den største
+            int maxR = 50, minR = 6;
+            if (radius > 100000) maxR = 75;
+            int scalingFactor = (int)(1500.0 * 1000.0 / windowWidth); //større width = mindre faktor, mindre width = større faktor - NB føl ikkje med ein resize!!
+            int scaledRadius = radius / scalingFactor;
+
+            if (scaledRadius > maxR) scaledRadius = maxR;
+            if (scaledRadius < minR) scaledRadius = minR;
+            return scaledRadius;
         }
     }
 }
