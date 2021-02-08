@@ -6,11 +6,11 @@ namespace Oblig3Console
 {
     class Astronomy
     {
-        public delegate Action<int> DelCalc();
+        public Action<int> delCalc;
 
         static void Main(string[] args)
         {
-            DelCalc dc;
+            //DelCalc dc;
 
             List<SpaceObject> solarSystem = new List<SpaceObject>
             {

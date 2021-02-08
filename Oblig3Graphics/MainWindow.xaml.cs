@@ -24,18 +24,16 @@ namespace Oblig3Graphics
     {
         private List<SpaceObject> solarSystem;
         private int time = 0;
-        public event Action<int> moveIt;
+        public event Action<int> moveSolarSystem;
+        public event Action<int> moveInfo;
         private DispatcherTimer t;
         public MainWindow()
         {
             InitializeComponent();
 
             SetupSolarSystem();
-            SetupPlanetShapes();
 
             SetupComboBox();
-
-            solarSystem.ForEach(s => moveIt += s.CalcPos);
 
             t = new DispatcherTimer();
             t.Interval = new TimeSpan(300000); //ca. 30 fps?
@@ -46,12 +44,13 @@ namespace Oblig3Graphics
 
         private void T_Tick(object sender, EventArgs e)
         {
-            moveIt(time++);
+            if (moveInfo is not null) moveInfo(time);
+            moveSolarSystem(time++);
         }
 
         private void SetupComboBox()
         {
-            solarSystem.FindAll(s => s is Planet).ForEach(s => planetComboBox.Items.Add(s));
+            solarSystem.FindAll(s => s is Planet && s is not Moon).ForEach(s => planetComboBox.Items.Add(s));
             planetComboBox.Items.Add("Stop planet view");
             planetComboBox.SelectionChanged += PlanetComboBox_SelectionChanged;
         }
@@ -59,12 +58,17 @@ namespace Oblig3Graphics
         private void PlanetComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             planetInfoCanvas.Children.Clear();
+            moveInfo = null;
             if (planetComboBox.SelectedItem is Planet)
             {
                 Planet selectedPlanet = (Planet)(planetComboBox.SelectedItem);
                 planetInfoCanvas.Children.Add(selectedPlanet.infoShape);
                 planetInfoCanvas.Children.Add(selectedPlanet.infoText);
-                selectedPlanet.Moons.ForEach(m => planetInfoCanvas.Children.Add(m.infoShape));
+                selectedPlanet.Moons.ForEach(m => {
+                    planetInfoCanvas.Children.Add(m.infoShape);
+                    planetInfoCanvas.Children.Add(m.infoText);
+                    moveInfo += m.CalcPosInfo;
+                });
                 planetInfoCanvas.Visibility = Visibility.Visible;
                 selectedPlanet.CalcPosInfo(0);
             } else
@@ -104,15 +108,32 @@ namespace Oblig3Graphics
             p.Color = Colors.Orange;
             solarSystem.Add(p);
 
+            //Lagar jorda
             p = new Planet("Earth", 149600, 365);
             p.ObjectRadius = 6357;
             p.Color = Colors.Blue;
             solarSystem.Add(p);
+            //lagar månen til jorda
+            m = new Moon("The Moon", 384, 27);
+            m.ObjectRadius = 1738;
+            m.Color = Colors.Black; //todo farge!
+            p.Moons.Add(m);
+            solarSystem.Add(m);
 
             p = new Planet("Mars", 227940, 687);
             p.ObjectRadius = 3378;
             p.Color = Colors.Red;
             solarSystem.Add(p);
+            m = new Moon("Phobos", 9, 1);
+            m.ObjectRadius = 11;
+            m.Color = Colors.Black; //todo farge!
+            p.Moons.Add(m);
+            solarSystem.Add(m);
+            m = new Moon("Deimos", 23, 2);
+            m.ObjectRadius = 6;
+            m.Color = Colors.Black; //todo farge!
+            p.Moons.Add(m);
+            solarSystem.Add(m);
 
             p = new Planet("Jupiter", 778330, 4333);
             p.ObjectRadius = 66855;
@@ -134,14 +155,37 @@ namespace Oblig3Graphics
             p.Color = Colors.DarkBlue;
             solarSystem.Add(p);
 
+            SetupPlanetShapes();
+            SetupMoonInfoShapes();
             //p = new DwarfPlanet("Pluto", 5913520, 90550);
+
+            solarSystem.FindAll(s => s is not Moon).ForEach(s => moveSolarSystem += s.CalcPos);
+        }
+
+        private void SetupMoonInfoShapes()
+        {
+            foreach(SpaceObject s in solarSystem)
+            {
+                if (s is Moon)
+                {
+                    Moon m = s as Moon;
+                    m.infoShape = new Ellipse();
+                    m.infoShape.Width = SpaceScalingHelper.ObjectRadiusInfoScaling(planetInfoCanvas.Width, m.ObjectRadius);
+                    m.infoShape.Height = SpaceScalingHelper.ObjectRadiusInfoScaling(planetInfoCanvas.Width, m.ObjectRadius);
+                    m.infoShape.Fill = new SolidColorBrush(m.Color);
+                    m.infoText = new TextBlock();
+                    m.infoText.Background = Brushes.AntiqueWhite;
+                    m.infoText.TextAlignment = TextAlignment.Center;
+                    m.infoText.Inlines.Add(new Bold(new Run(m.Name)));
+                }
+            }
         }
 
         private void SetupPlanetShapes()
         {
             foreach (SpaceObject s in solarSystem)
             {
-                if (s is Planet)
+                if (s is Planet && s is not Moon)
                 {
                     Planet p = s as Planet;
                     p.shape = new Ellipse();

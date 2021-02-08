@@ -166,10 +166,20 @@ namespace SpaceSim
 
         public override void CalcPosInfo(int time)
         {
-            base.CalcPosInfo(time);
+            //base.CalcPosInfo(time); //?
             Canvas c = (Canvas)infoShape.Parent;
-            int scaledOrbitRadius = SpaceScalingHelper.OrbitalRadiusScaling(c.RenderSize.Width, OrbitalRadius);
+            int scaledOrbitRadius = SpaceScalingHelper.OrbitalRadiusInfoScaling(c.RenderSize.Width, OrbitalRadius);
+            int slowDown = 200;
+            if (OrbitalRadius < 100) slowDown = 5500;
 
+            XPos = (int)(c.RenderSize.Width / 2 - infoShape.Width / 2 + scaledOrbitRadius * Math.Cos(time * (2 * 3.1416 * scaledOrbitRadius / OrbitalPeriod) / slowDown));
+            YPos = (int)(c.RenderSize.Height / 2 - infoShape.Height / 2 + scaledOrbitRadius * -Math.Sin(time * (2 * 3.1416 * scaledOrbitRadius / OrbitalPeriod) / slowDown));
+
+            Canvas.SetLeft(infoShape, XPos);
+            Canvas.SetTop(infoShape, YPos);
+
+            Canvas.SetLeft(infoText, XPos + infoShape.Width / 2);
+            Canvas.SetTop(infoText, YPos + infoShape.Height);
         }
 
         public override void Draw()
@@ -297,6 +307,33 @@ namespace SpaceSim
 
             if (scaledRadius > maxR) scaledRadius = maxR;
             if (scaledRadius < minR) scaledRadius = minR;
+            return scaledRadius;
+        }
+
+        public static int ObjectRadiusInfoScaling(double canvasWidth, int radius)
+        {
+            //TODO fiks!!!
+            //maks radius = 60px? (sola), minimum = 5px? - blir ikkje til scale då,menmen
+            //9 objekt som skal teiknast, så ~1/10 av breidda til den største
+            int maxR = 10, minR = 5;
+            if (radius > 100000) maxR = 75;
+            int scalingFactor = (int)(1000.0 / canvasWidth); //større width = mindre faktor, mindre width = større faktor - NB føl ikkje med ein resize!!
+            int scaledRadius = radius / scalingFactor;
+
+            if (scaledRadius > maxR) scaledRadius = maxR;
+            if (scaledRadius < minR) scaledRadius = minR;
+            return scaledRadius;
+        }
+
+        public static int OrbitalRadiusInfoScaling(double canvasWidth, int radius)
+        {
+            //todo denne er berre tull...
+            //større width = mindre faktor, mindre width = større faktor
+            if ((int)canvasWidth == 0) return 0;
+            int scalingFactor = (int)(1000.0 / canvasWidth);
+            double extraScaling = 1.0 + radius / 100;
+            if (radius < 100) extraScaling = 0.12;
+            int scaledRadius = (int)(radius / (scalingFactor * extraScaling));
             return scaledRadius;
         }
     }
