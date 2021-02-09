@@ -39,7 +39,20 @@ namespace Oblig3Graphics
             t.Interval = new TimeSpan(300000); //ca. 30 fps?
             t.Tick += T_Tick;
             t.Start();
+
+            planetInfoCanvas.MouseRightButtonDown += PlanetInfoCanvas_MouseRightButtonDown;
             
+        }
+
+        private void PlanetInfoCanvas_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (planetInfoCanvas.Visibility == Visibility.Visible)
+            {
+                planetInfoCanvas.Children.Clear();
+                moveInfo = null;
+                planetInfoCanvas.Visibility = Visibility.Hidden;
+                planetComboBox.SelectedIndex = planetComboBox.Items.Count - 1;
+            }
         }
 
         private void T_Tick(object sender, EventArgs e)
@@ -189,6 +202,7 @@ namespace Oblig3Graphics
                 {
                     Planet p = s as Planet;
                     p.shape = new Ellipse();
+                    p.shape.Name = p.Name;
                     //p.shape.Name = p.Name;
                     p.shape.Fill = new SolidColorBrush(p.Color);
                     int shapeRadius = SpaceScalingHelper.ObjectRadiusScaling(myWindow.Width, p.ObjectRadius);
@@ -222,7 +236,34 @@ namespace Oblig3Graphics
 
         private void Planet_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            throw new NotImplementedException();
+            Planet p = null;
+            if (sender is Ellipse)
+            {
+                Ellipse ell = (Ellipse)sender;
+                p = (Planet)solarSystem.Find(s => s.Name.Equals(ell.Name)); 
+
+            } else if (sender is TextBlock)
+            {
+                TextBlock tb = (TextBlock)sender;
+                Bold b = (Bold)tb.Inlines.ElementAt(0);
+                string content = ((Run)b.Inlines.ElementAt(0)).Text;
+                p = (Planet)solarSystem.Find(s => s.Name.Equals(content));
+            }
+            if (p is not null)
+            {
+                planetInfoCanvas.Children.Clear();
+                moveInfo = null;
+
+                planetInfoCanvas.Children.Add(p.infoShape);
+                planetInfoCanvas.Children.Add(p.infoText);
+                p.Moons.ForEach(m => {
+                    planetInfoCanvas.Children.Add(m.infoShape);
+                    planetInfoCanvas.Children.Add(m.infoText);
+                    moveInfo += m.CalcPosInfo;
+                });
+                planetInfoCanvas.Visibility = Visibility.Visible;
+                p.CalcPosInfo(0);
+            }
         }
     }
 }
