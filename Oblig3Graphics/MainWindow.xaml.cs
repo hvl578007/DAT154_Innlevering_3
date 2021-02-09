@@ -68,6 +68,20 @@ namespace Oblig3Graphics
                     }
                 }
             }
+            foreach (UIElement ui in planetInfoCanvas.Children)
+            {
+                if (ui is Ellipse && (ui as Ellipse).Name.Equals("Orbit"))
+                {
+                    if (planetOrbitIsHidden)
+                    {
+                        ui.Visibility = Visibility.Visible;
+                    }
+                    else
+                    {
+                        ui.Visibility = Visibility.Hidden;
+                    }
+                }
+            }
 
 
             planetOrbitIsHidden = !planetOrbitIsHidden;
@@ -100,7 +114,21 @@ namespace Oblig3Graphics
                     }
                 }
             }
+            foreach (UIElement ui in planetInfoCanvas.Children)
+            {
 
+                if (ui is TextBlock)
+                {
+                    if (planetTextIsHidden)
+                    {
+                        ui.Visibility = Visibility.Visible;
+                    }
+                    else
+                    {
+                        ui.Visibility = Visibility.Hidden;
+                    }
+                }
+            }
 
             planetTextIsHidden = !planetTextIsHidden;
 
@@ -169,6 +197,7 @@ namespace Oblig3Graphics
                 planetInfoCanvas.Children.Add(selectedPlanet.infoShape);
                 planetInfoCanvas.Children.Add(selectedPlanet.infoText);
                 selectedPlanet.Moons.ForEach(m => {
+                    planetInfoCanvas.Children.Add(m.orbit);
                     planetInfoCanvas.Children.Add(m.infoShape);
                     planetInfoCanvas.Children.Add(m.infoText);
                     moveInfo += m.CalcPosInfo;
@@ -362,6 +391,9 @@ namespace Oblig3Graphics
                     m.infoText.Background = Brushes.AntiqueWhite;
                     m.infoText.TextAlignment = TextAlignment.Center;
                     m.infoText.Inlines.Add(new Bold(new Run(m.Name)));
+                    m.orbit = new Ellipse();
+                    m.orbit.Name = "Orbit";
+                    m.orbit.Stroke = new SolidColorBrush(Colors.Black);
                 }
             }
         }
@@ -436,6 +468,7 @@ namespace Oblig3Graphics
                 planetInfoCanvas.Children.Add(p.infoShape);
                 planetInfoCanvas.Children.Add(p.infoText);
                 p.Moons.ForEach(m => {
+                    planetInfoCanvas.Children.Add(m.orbit);
                     planetInfoCanvas.Children.Add(m.infoShape);
                     planetInfoCanvas.Children.Add(m.infoText);
                     moveInfo += m.CalcPosInfo;

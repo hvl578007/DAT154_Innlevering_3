@@ -177,6 +177,7 @@ namespace SpaceSim
         public override void CalcPosInfo(int time)
         {
             //base.CalcPosInfo(time); //?
+            //todo null-sjekk
             Canvas c = (Canvas)infoShape.Parent;
             int scaledOrbitRadius = SpaceScalingHelper.OrbitalRadiusInfoScaling(c.RenderSize.Width, OrbitalRadius);
             int slowDown = 200;
@@ -186,6 +187,12 @@ namespace SpaceSim
 
             XPos = (int)(c.RenderSize.Width / 2 - infoShape.Width / 2 + scaledOrbitRadius * Math.Cos(time * (2 * 3.1416 * scaledOrbitRadius / OrbitalPeriod) / slowDown));
             YPos = (int)(c.RenderSize.Height / 2 - infoShape.Height / 2 + scaledOrbitRadius * -Math.Sin(time * (2 * 3.1416 * scaledOrbitRadius / OrbitalPeriod) / slowDown));
+
+            orbit.Width = scaledOrbitRadius * 2;
+            orbit.Height = scaledOrbitRadius * 2;
+            //todo null-sjekk
+            Canvas.SetLeft(orbit, c.RenderSize.Width / 2 - scaledOrbitRadius);
+            Canvas.SetTop(orbit, c.RenderSize.Height / 2 - scaledOrbitRadius);
 
             Canvas.SetLeft(infoShape, XPos);
             Canvas.SetTop(infoShape, YPos);
@@ -370,7 +377,7 @@ namespace SpaceSim
             //if (radius < 100) extraScaling = 0.12;
             //int scaledRadius = (int)(radius / (scalingFactor * extraScaling));
             if (scaledRadius < minR) scaledRadius = scaledRadius * 3 + minR;
-            if (scaledRadius > maxR) scaledRadius = maxR - 45;
+            if (scaledRadius > maxR) scaledRadius = maxR - 30;
             return scaledRadius;
         }
 
