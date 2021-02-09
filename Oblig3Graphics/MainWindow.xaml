@@ -14,6 +14,7 @@
             
         </Canvas>
         <ComboBox Name="planetComboBox" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top" Width="120"/>
-        <Button Name="planetTextButton" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="50,0,0,50" Height="25" Width="120" Content="Hide textboxes"/>
+        <Button Name="planetTextButton" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="50,0,0,50" Height="25" Width="120" Content="Hide textboxes" Grid.ZIndex="2"/>
+        <Button Name="planetOrbitButton" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="200,0,0,50" Height="25" Width="120" Content="Hide orbits" Grid.ZIndex="2"/>
     </Grid>
 </Window>

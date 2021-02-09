@@ -87,6 +87,7 @@ namespace SpaceSim
         public Ellipse shape { get; set; }
         public TextBlock shapeText { get; set; }
         public List<Moon> Moons { get; set; }
+        public Ellipse orbit { get; set; }
 
         //planetinfo greier... burde nok kanskje vere egen klasse eller noko, blir rot...
         public Ellipse infoShape { get; set; }
@@ -107,6 +108,11 @@ namespace SpaceSim
             XPos = (int)(c.RenderSize.Width / 2 - shape.Width / 2 + scaledOrbitRadius * Math.Cos(time * (2 * 3.1416 * scaledOrbitRadius / OrbitalPeriod) / 30));
             YPos = (int)(c.RenderSize.Height / 2 - shape.Height / 2 + scaledOrbitRadius * -Math.Sin(time * (2 * 3.1416 * scaledOrbitRadius / OrbitalPeriod) / 30));
             //TODO må ha noko skalering her
+            orbit.Width = scaledOrbitRadius * 2;
+            orbit.Height = scaledOrbitRadius * 2;
+            Canvas.SetLeft(orbit, c.RenderSize.Width / 2 - scaledOrbitRadius);
+            Canvas.SetTop(orbit, c.RenderSize.Height / 2 - scaledOrbitRadius);
+
             Canvas.SetLeft(shape, XPos);
             Canvas.SetTop(shape, YPos);
 

@@ -27,7 +27,7 @@ namespace Oblig3Graphics
         public event Action<int> moveSolarSystem;
         public event Action<int> moveInfo;
         private DispatcherTimer t;
-        private bool planetTextIsHidden = false;
+        private bool planetTextIsHidden = false, planetOrbitIsHidden = false;
         public MainWindow()
         {
             InitializeComponent();
@@ -46,7 +46,40 @@ namespace Oblig3Graphics
             myWindow.KeyDown += MyWindow_KeyDown;
 
             planetTextButton.Click += PlanetTextButton_Click;
+
+            planetOrbitButton.Click += PlanetOrbitButton_Click;
             
+        }
+
+        private void PlanetOrbitButton_Click(object sender, RoutedEventArgs e)
+        {
+            foreach (UIElement ui in myCanvas.Children)
+            {
+
+                if (ui is Ellipse && (ui as Ellipse).Name.Equals("Orbit"))
+                {
+                    if (planetOrbitIsHidden)
+                    {
+                        ui.Visibility = Visibility.Visible;
+                    }
+                    else
+                    {
+                        ui.Visibility = Visibility.Hidden;
+                    }
+                }
+            }
+
+
+            planetOrbitIsHidden = !planetOrbitIsHidden;
+
+            if (planetOrbitIsHidden)
+            {
+                planetOrbitButton.Content = "Show orbits";
+            }
+            else
+            {
+                planetOrbitButton.Content = "Hide orbits";
+            }
         }
 
         private void PlanetTextButton_Click(object sender, RoutedEventArgs e)
@@ -265,6 +298,11 @@ namespace Oblig3Graphics
                 if (s is Planet && s is not Moon)
                 {
                     Planet p = s as Planet;
+                    p.orbit = new Ellipse();
+                    p.orbit.Name = "Orbit"; //til bruk for å skjule dei
+                    p.orbit.Stroke = new SolidColorBrush(Colors.Black);
+                    myCanvas.Children.Add(p.orbit);
+
                     p.shape = new Ellipse();
                     p.shape.Name = p.Name;
                     //p.shape.Name = p.Name;
@@ -281,6 +319,8 @@ namespace Oblig3Graphics
                     p.shapeText.Inlines.Add(new Bold(new Run(p.Name)));
                     p.shapeText.MouseDown += Planet_MouseDown;
                     myCanvas.Children.Add(p.shapeText);
+                    //lagar orbit
+
                     p.CalcPos(0);
 
                     //detaljert info:
