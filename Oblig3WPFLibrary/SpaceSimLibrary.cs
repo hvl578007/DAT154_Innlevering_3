@@ -180,7 +180,9 @@ namespace SpaceSim
             Canvas c = (Canvas)infoShape.Parent;
             int scaledOrbitRadius = SpaceScalingHelper.OrbitalRadiusInfoScaling(c.RenderSize.Width, OrbitalRadius);
             int slowDown = 200;
+            //todo fiks slowdown
             if (OrbitalRadius < 100) slowDown = 5500;
+            slowDown = SpaceScalingHelper.CalcSlowDown(OrbitalRadius, OrbitalPeriod);
 
             XPos = (int)(c.RenderSize.Width / 2 - infoShape.Width / 2 + scaledOrbitRadius * Math.Cos(time * (2 * 3.1416 * scaledOrbitRadius / OrbitalPeriod) / slowDown));
             YPos = (int)(c.RenderSize.Height / 2 - infoShape.Height / 2 + scaledOrbitRadius * -Math.Sin(time * (2 * 3.1416 * scaledOrbitRadius / OrbitalPeriod) / slowDown));
@@ -360,12 +362,22 @@ namespace SpaceSim
         {
             //todo denne er berre tull...
             //større width = mindre faktor, mindre width = større faktor
+            // + større radius = større faktor, mindre radius = mindre faktor (nærmare)
+            int minR = 50, maxR = (int)(canvasWidth / 2);
             if ((int)canvasWidth == 0) return 0;
-            int scalingFactor = (int)(1000.0 / canvasWidth);
-            double extraScaling = 1.0 + radius / 100;
-            if (radius < 100) extraScaling = 0.12;
-            int scaledRadius = (int)(radius / (scalingFactor * extraScaling));
+            int scaledRadius = (int)(1000.0 * (1.0 / maxR) * radius / 10);
+            //double extraScaling = 1.0 + radius / 100;
+            //if (radius < 100) extraScaling = 0.12;
+            //int scaledRadius = (int)(radius / (scalingFactor * extraScaling));
+            if (scaledRadius < minR) scaledRadius = scaledRadius * 3 + minR;
+            if (scaledRadius > maxR) scaledRadius = maxR - 45;
             return scaledRadius;
+        }
+
+        public static int CalcSlowDown(int orbitRadius, int orbitPeriod)
+        {
+            if (orbitPeriod < 0) orbitPeriod = Math.Abs(orbitPeriod);
+            return 200 * orbitRadius / orbitPeriod;
         }
     }
 }

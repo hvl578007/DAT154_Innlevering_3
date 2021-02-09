@@ -230,6 +230,7 @@ namespace Oblig3Graphics
             p.Moons.Add(m);
             solarSystem.Add(m);
 
+            //mars
             p = new Planet("Mars", 227940, 687);
             p.ObjectRadius = 3378;
             p.Color = Colors.Red;
@@ -245,25 +246,99 @@ namespace Oblig3Graphics
             p.Moons.Add(m);
             solarSystem.Add(m);
 
+            //jupiter, tar berre 4 månar?
             p = new Planet("Jupiter", 778330, 4333);
             p.ObjectRadius = 66855;
             p.Color = Colors.Gray;
             solarSystem.Add(p);
+            m = new Moon("Io", 422, 2);
+            m.ObjectRadius = 1821;
+            m.Color = Colors.Black; //todo farge!
+            p.Moons.Add(m);
+            solarSystem.Add(m);
+            m = new Moon("Europa", 671, 4);
+            m.ObjectRadius = 1561;
+            m.Color = Colors.Black; //todo farge!
+            p.Moons.Add(m);
+            solarSystem.Add(m);
+            m = new Moon("Ganymede", 1070, 7);
+            m.ObjectRadius = 2632;
+            m.Color = Colors.Black; //todo farge!
+            p.Moons.Add(m);
+            solarSystem.Add(m);
+            m = new Moon("Callisto", 1883, 17);
+            m.ObjectRadius = 2410;
+            m.Color = Colors.Black; //todo farge!
+            p.Moons.Add(m);
+            solarSystem.Add(m);
 
+            //saturn + 3 første månar
             p = new Planet("Saturn", 1429400, 10760);
             p.ObjectRadius = 54364;
             p.Color = Colors.LightSlateGray;
             solarSystem.Add(p);
+            m = new Moon("Mimas", 186, 1);
+            m.ObjectRadius = 196;
+            m.Color = Colors.Black; //todo farge!
+            p.Moons.Add(m);
+            solarSystem.Add(m);
+            m = new Moon("Enceladus", 238, 1);
+            m.ObjectRadius = 249;
+            m.Color = Colors.Black; //todo farge!
+            p.Moons.Add(m);
+            solarSystem.Add(m);
+            m = new Moon("Tethys", 295, 2);
+            m.ObjectRadius = 530;
+            m.Color = Colors.Black; //todo farge!
+            p.Moons.Add(m);
+            solarSystem.Add(m);
 
+            //uranus + 4 første månar
             p = new Planet("Uranus", 2879889, 39685);
             p.ObjectRadius = 24973;
             p.Color = Colors.Cyan;
             solarSystem.Add(p);
+            m = new Moon("Ariel", 191, 3);
+            m.ObjectRadius = 579;
+            m.Color = Colors.Black; //todo farge!
+            p.Moons.Add(m);
+            solarSystem.Add(m);
+            m = new Moon("Umbriel", 266, 4);
+            m.ObjectRadius = 585;
+            m.Color = Colors.Black; //todo farge!
+            p.Moons.Add(m);
+            solarSystem.Add(m);
+            m = new Moon("Titania", 436, 9);
+            m.ObjectRadius = 789;
+            m.Color = Colors.Black; //todo farge!
+            p.Moons.Add(m);
+            solarSystem.Add(m);
+            m = new Moon("Oberon", 583, 13);
+            m.ObjectRadius = 762;
+            m.Color = Colors.Black; //todo farge!
+            p.Moons.Add(m);
+            solarSystem.Add(m);
 
+            //neptun + 3 første månar
             p = new Planet("Neptune", 4504300, 60190);
             p.ObjectRadius = 24341;
             p.Color = Colors.DarkBlue;
             solarSystem.Add(p);
+            m = new Moon("Triton", 355, -6);
+            m.ObjectRadius = 1350;
+            m.Color = Colors.Black; //todo farge!
+            p.Moons.Add(m);
+            solarSystem.Add(m);
+            m = new Moon("Nereid", 5513, 360);
+            m.ObjectRadius = 170;
+            m.Color = Colors.Black; //todo farge!
+            p.Moons.Add(m);
+            solarSystem.Add(m);
+            m = new Moon("Naiad", 48, 1);
+            m.ObjectRadius = 29;
+            m.Color = Colors.Black; //todo farge!
+            p.Moons.Add(m);
+            solarSystem.Add(m);
 
             SetupPlanetShapes();
             SetupMoonInfoShapes();
