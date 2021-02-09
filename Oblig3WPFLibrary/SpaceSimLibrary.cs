@@ -47,6 +47,7 @@ namespace SpaceSim
         public Color Color { get; set; }
 
         public Ellipse shape { get; set; }
+        public TextBlock shapeText { get; set; }
 
         public Star(String name) : base(name)
         {
@@ -63,6 +64,9 @@ namespace SpaceSim
             YPos = (int)(c.RenderSize.Height / 2 - shape.Height / 2);
             Canvas.SetLeft(shape, XPos);
             Canvas.SetTop(shape, YPos);
+
+            Canvas.SetLeft(shapeText, XPos + shape.Width / 4);
+            Canvas.SetTop(shapeText, YPos + shape.Height);
         }
 
         public override void Draw()
@@ -272,6 +276,27 @@ namespace SpaceSim
 
     public class SpaceScalingHelper
     {
+        //ignorer dette?
+        private static int simSpeed = 30;
+
+        public static void IncreaseSimSpeed()
+        {
+            simSpeed -= 5;
+            if (simSpeed < 0) simSpeed = 0;
+        }
+
+        public static void DecreaseSimSpeed()
+        {
+            simSpeed += 5;
+        }
+
+        public static int SimSpeed
+        {
+            get
+            {
+                return simSpeed;
+            }
+        }
         /// <summary>
         /// Gir ein skalering på orbitalradius-skalering (?)
         /// </summary>

@@ -27,6 +27,7 @@ namespace Oblig3Graphics
         public event Action<int> moveSolarSystem;
         public event Action<int> moveInfo;
         private DispatcherTimer t;
+        private bool planetTextIsHidden = false;
         public MainWindow()
         {
             InitializeComponent();
@@ -36,12 +37,69 @@ namespace Oblig3Graphics
             SetupComboBox();
 
             t = new DispatcherTimer();
-            t.Interval = new TimeSpan(300000); //ca. 30 fps?
+            t.Interval = new TimeSpan(300000); ; //ca. 30 fps?
             t.Tick += T_Tick;
             t.Start();
 
             planetInfoCanvas.MouseRightButtonDown += PlanetInfoCanvas_MouseRightButtonDown;
+
+            myWindow.KeyDown += MyWindow_KeyDown;
+
+            planetTextButton.Click += PlanetTextButton_Click;
             
+        }
+
+        private void PlanetTextButton_Click(object sender, RoutedEventArgs e)
+        {
+            
+            foreach (UIElement ui in myCanvas.Children)
+            {
+                
+                if (ui is TextBlock)
+                {
+                    if (planetTextIsHidden)
+                    {
+                        ui.Visibility = Visibility.Visible;
+                    }
+                    else
+                    {
+                        ui.Visibility = Visibility.Hidden;
+                    }
+                }
+            }
+
+
+            planetTextIsHidden = !planetTextIsHidden;
+
+            if (planetTextIsHidden)
+            {
+                planetTextButton.Content = "Show textboxes";
+            } else
+            {
+                planetTextButton.Content = "Hide textboxes";
+            }
+        }
+
+        private void MyWindow_KeyDown(object sender, KeyEventArgs e)
+        {
+            //endre det intervallet timeren oppdaterer seg på? eller det eg deler med i biblioteket...?
+            //følte ikkje begge deler blei så veeeldig bra... interval er meir "fps" men går raskare også, + hopper om eg endrer verdien i cos/sin funksjonen...
+            switch (e.Key)
+            {
+                case Key.Up:
+                    //SpaceScalingHelper.IncreaseSimSpeed();
+                    if (t.Interval.Ticks is not 0) t.Interval = t.Interval.Subtract(new TimeSpan(20000));
+                    break;
+
+                case Key.Down:
+                    //SpaceScalingHelper.DecreaseSimSpeed();
+                    t.Interval = t.Interval.Add(new TimeSpan(20000));
+                    break;
+
+                default:
+
+                    break;
+            }
         }
 
         private void PlanetInfoCanvas_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
@@ -108,7 +166,13 @@ namespace Oblig3Graphics
             int shapeRadius = SpaceScalingHelper.ObjectRadiusScaling(myWindow.Width, s.ObjectRadius);
             s.shape.Height = shapeRadius;
             s.shape.Width = shapeRadius;
+            s.shapeText = new TextBlock();
+            s.shapeText = new TextBlock();
+            s.shapeText.Background = Brushes.AntiqueWhite;
+            s.shapeText.TextAlignment = TextAlignment.Center;
+            s.shapeText.Inlines.Add(new Bold(new Run(s.Name)));
             myCanvas.Children.Add(s.shape);
+            myCanvas.Children.Add(s.shapeText);
             s.CalcPos(0);
 
             p = new Planet("Mercury", 57910, 88);
