@@ -6,7 +6,7 @@ namespace Oblig3Console
 {
     class Astronomy
     {
-        public Action<int> delCalc;
+        //public Action<int> delCalc;
 
         static void Main(string[] args)
         {

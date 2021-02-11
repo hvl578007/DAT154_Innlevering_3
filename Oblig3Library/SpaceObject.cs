@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using System.Windows.Shapes;
 
 
 namespace SpaceSim
@@ -33,8 +32,6 @@ namespace SpaceSim
         public int ObjectRadius { get; set; }
         public int RotationalPeriod { get; set; }
         public String Color { get; set; }
-
-        public Ellipse shape { get; set; }
 
         public Star(String name) : base(name) {
             XPos = 0; //todo?
